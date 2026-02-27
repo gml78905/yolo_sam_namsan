@@ -1,0 +1,12 @@
+yolo_sam_node:
+  ros__parameters:
+    image_topic: "/go1_d435/color/image_raw"
+    visualization_topic: "/visualization/test"
+    detections_topic: "/yolo_sam/detections"
+
+    # Paths
+    onnx_model_path: "/data/yolo-world_custom_5cls.onnx"
+    sam_weights: "/URobotics_ws/weights/mobile_sam.pt"
+
+    # Comma-separated classes or a .txt file path.
+    object_list: "sign,bench,car,building,tower,firehydrant"
