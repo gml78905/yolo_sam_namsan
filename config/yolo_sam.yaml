@@ -5,7 +5,7 @@ yolo_sam_node:
     detections_topic: "/yolo_sam/detections"
 
     # Paths
-    onnx_model_path: "/data/yolo-world_custom_5cls.onnx"
+    onnx_model_path: "/URobotics_ws/weights/yolo-world_custom_5cls.onnx"
     sam_weights: "/URobotics_ws/weights/mobile_sam.pt"
 
     # Comma-separated classes or a .txt file path.
