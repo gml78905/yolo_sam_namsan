@@ -1,6 +1,6 @@
 yolo_sam_node:
   ros__parameters:
-    image_topic: "/go1_d435/color/image_raw"
+    image_topic: "/scene_graph/synced_image" ##/go1_d435/color/image_raw
     visualization_topic: "/visualization/test"
     detections_topic: "/yolo_sam/detections"
 
