@@ -9,4 +9,4 @@ yolo_sam_node:
     sam_weights: "/URobotics_ws/weights/mobile_sam.pt"
 
     # Comma-separated classes or a .txt file path.
-    object_list: "sign,bench,car,building,tower,firehydrant"
+    object_list: "sign,bench,car,building,tower"

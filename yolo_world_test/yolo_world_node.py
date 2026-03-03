@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import base64
 from typing import List
 
 import cv2
@@ -53,7 +54,7 @@ class YoloWorldOnnxNode(Node):
 
         self.get_logger().info(
             f"[YOLO-ONNX] Subscribing image from: {image_topic}, "
-            f"publishing visualization to: {viz_topic}, detections to: {det_topic}"
+            f"publishing visualization to: {viz_topic}, detections(+segments) to: {det_topic}"
         )
 
         self.bridge = CvBridge()
@@ -367,7 +368,29 @@ class YoloWorldOnnxNode(Node):
         img_msg.header.frame_id = "camera_color_optical_frame"
         self.viz_pub.publish(img_msg)
 
-        # detections JSON publish
+        # Attach segmentation payload directly into detections (single-section JSON).
+        detections_payload = [dict(d) for d in tracked_dets]
+        if sam_masks_np is not None:
+            try:
+                for idx, det in enumerate(detections_payload):
+                    if idx >= sam_masks_np.shape[0]:
+                        continue
+                    mask = sam_masks_np[idx]
+                    if mask is None:
+                        continue
+
+                    mask_u8 = (mask.astype(np.uint8) * 255)
+                    ok, encoded = cv2.imencode(".png", mask_u8)
+                    if not ok:
+                        continue
+
+                    det["mask_png_base64"] = base64.b64encode(encoded.tobytes()).decode("ascii")
+                    det["mask_height"] = int(mask_u8.shape[0])
+                    det["mask_width"] = int(mask_u8.shape[1])
+            except Exception as e:
+                self.get_logger().warning(f"[YOLO-ONNX] Failed to encode per-detection masks: {e}")
+
+        # Single-section JSON publish: all info is inside detections[].
         try:
             det_msg = String()
             det_msg.data = json.dumps(
@@ -380,7 +403,7 @@ class YoloWorldOnnxNode(Node):
                         },
                         "frame_id": msg.header.frame_id,
                     },
-                    "detections": tracked_dets,
+                    "detections": detections_payload,
                 },
                 ensure_ascii=False,
             )

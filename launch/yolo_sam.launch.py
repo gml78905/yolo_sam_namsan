@@ -24,7 +24,7 @@ def generate_launch_description():
             ),
             DeclareLaunchArgument(
                 "image_topic",
-                default_value="/go1_d435/color/image_raw",
+                default_value="/scene_graph/synced_image",
                 description="Input image topic",
             ),
             DeclareLaunchArgument(
@@ -35,7 +35,7 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "detections_topic",
                 default_value="/yolo_sam/detections",
-                description="Detections JSON output topic",
+                description="Detections+segments JSON output topic",
             ),
             Node(
                 package="yolo_sam",
